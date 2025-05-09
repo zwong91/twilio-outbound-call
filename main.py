@@ -26,6 +26,29 @@ def load_prompt(file_name):
         print(f"Could not find file: {prompt_path}")
         raise
 
+async def check_number_allowed(to):
+    """Check if a number is allowed to be called."""
+    try:
+        # Uncomment these lines to test numbers. Only add numbers you have permission to call
+        # OVERRIDE_NUMBERS = ['+18005551212'] 
+        # if to in OVERRIDE_NUMBERS:             
+          # return True
+        #控制的 Twilio 来电号码
+        incoming_numbers = client.incoming_phone_numbers.list(phone_number=to)
+        if incoming_numbers:
+            return True
+
+        # 验证外拨来电 ID
+        outgoing_caller_ids = client.outgoing_caller_ids.list(phone_number=to)
+        if outgoing_caller_ids:
+            return True
+
+        return False
+    except Exception as e:
+        print(f"Error checking phone number: {e}")
+        return False
+    
+
 # Configuration
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY') # requires OpenAI Realtime API Access
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
@@ -49,6 +72,38 @@ if not OPENAI_API_KEY:
 
 if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN or not TWILIO_PHONE_NUMBER:
     raise ValueError('Missing Twilio configuration. Please set it in the .env file.')
+
+
+async def make_call(phone_number_to_call: str):
+    """Make an outbound call."""
+    if not phone_number_to_call:
+        raise ValueError("Please provide a phone number to call.")
+
+    is_allowed = await check_number_allowed(phone_number_to_call)
+    if not is_allowed:
+        raise ValueError(f"The number {phone_number_to_call} is not recognized as a valid outgoing number or caller ID.")
+
+    # Ensure compliance with applicable laws and regulations
+    # All of the rules of TCPA apply even if a call is made by AI.
+    # Do your own diligence for compliance.
+
+    outbound_twiml = (
+        f'<?xml version="1.0" encoding="UTF-8"?>'
+        f'<Response><Connect><Stream url="wss://{NGROK_URL}/media-stream" /></Connect></Response>'
+    )
+
+    call = client.calls.create(
+        from_=TWILIO_PHONE_NUMBER,
+        to=phone_number_to_call,
+        twiml=outbound_twiml
+    )
+
+    await log_call_sid(call.sid)
+
+async def log_call_sid(call_sid):
+    """Log the call SID."""
+    print(f"Call started with SID: {call_sid}")
+    
 
 @app.get("/", response_class=HTMLResponse)
 async def index_page():
@@ -97,7 +152,7 @@ async def handle_media_stream(websocket: WebSocket):
             "OpenAI-Beta": "realtime=v1"
         }
     ) as openai_ws:
-        await send_session_update(openai_ws)
+        await initialize_session(openai_ws)
         stream_sid = None
         session_id = None
 
@@ -156,11 +211,34 @@ async def handle_media_stream(websocket: WebSocket):
 
         await asyncio.gather(receive_from_twilio(), send_to_twilio())
 
-async def send_session_update(openai_ws):
-    """Send session update to OpenAI WebSocket."""
+
+async def send_initial_conversation_item(openai_ws):
+    """Send initial conversation so AI talks first."""
+    initial_conversation_item = {
+        "type": "conversation.item.create",
+        "item": {
+            "type": "message",
+            "role": "user",
+            "content": [
+                {
+                    "type": "input_text",
+                    "text": (
+                        "您好！我是小赖,受聘於「大赖市調研究中心」進行房地产市場調查。請問您最近有空嗎？我想了解一下您具體的购房想法和需求，看看我能如何進一步協助您。"
+                    )
+                }
+            ]
+        }
+    }
+    await openai_ws.send(json.dumps(initial_conversation_item))
+    await openai_ws.send(json.dumps({"type": "response.create"}))
+
+#入站和出站音频格式设置为 g711_ulaw 。该格式受 Twilio 和媒体流支持
+async def initialize_session(openai_ws):
+    """Control initial session Send session update to OpenAI WebSocket."""
     session_update = {
         "type": "session.update",
         "session": {
+            "turn_detection": {"type": "server_vad"},
             "input_audio_format": "g711_ulaw",
             "output_audio_format": "g711_ulaw",
             "voice": VOICE,
@@ -171,18 +249,38 @@ async def send_session_update(openai_ws):
     }
     print('Sending session update:', json.dumps(session_update))
     await openai_ws.send(json.dumps(session_update))
+    
+    # Have the AI speak first
+    await send_initial_conversation_item(openai_ws)
 
+#python main.py --call=sip:admin@jokerrr.sip.twilio.com
 if __name__ == "__main__":
     import uvicorn
-    to_phone_number = input("Please enter the phone number to call: ")
-    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    try:
-        call = client.calls.create(
-            url=f"{NGROK_URL}/outgoing-call",
-            to=to_phone_number,
-            from_=TWILIO_PHONE_NUMBER
-        )
-        print(f"Call initiated with SID: {call.sid}")
-    except Exception as e:
-        print(f"Error initiating call: {e}")
+    # to_phone_number = input("Please enter the phone number to call: ")
+    # client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    # try:
+    #     call = client.calls.create(
+    #         url=f"{NGROK_URL}/outgoing-call",
+    #         to=to_phone_number,
+    #         from_=TWILIO_PHONE_NUMBER
+    #     )
+    #     print(f"Call initiated with SID: {call.sid}")
+    # except Exception as e:
+    #     print(f"Error initiating call: {e}")
+    # uvicorn.run(app, host="0.0.0.0", port=PORT)
+
+    parser = argparse.ArgumentParser(description="Run the Twilio AI voice assistant server.")
+    parser.add_argument('--call', required=True, help="The phone number to call, e.g., '--call=+18005551212'")
+    args = parser.parse_args()
+
+    phone_number = args.call
+    print(
+        'Our recommendation is to always disclose the use of AI for outbound or inbound calls.\n'
+        'Reminder: All of the rules of TCPA apply even if a call is made by AI.\n'
+        'Check with your counsel for legal and compliance advice.'
+    )
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(make_call(phone_number))
+    
     uvicorn.run(app, host="0.0.0.0", port=PORT)
