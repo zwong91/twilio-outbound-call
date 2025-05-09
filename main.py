@@ -76,12 +76,12 @@ if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN or not TWILIO_PHONE_NUMBER:
 
 async def make_call(phone_number_to_call: str):
     """Make an outbound call."""
-    if not phone_number_to_call:
-        raise ValueError("Please provide a phone number to call.")
+    # if not phone_number_to_call:
+    #     raise ValueError("Please provide a phone number to call.")
 
-    is_allowed = await check_number_allowed(phone_number_to_call)
-    if not is_allowed:
-        raise ValueError(f"The number {phone_number_to_call} is not recognized as a valid outgoing number or caller ID.")
+    # is_allowed = await check_number_allowed(phone_number_to_call)
+    # if not is_allowed:
+    #     raise ValueError(f"The number {phone_number_to_call} is not recognized as a valid outgoing number or caller ID.")
 
     # Ensure compliance with applicable laws and regulations
     # All of the rules of TCPA apply even if a call is made by AI.
