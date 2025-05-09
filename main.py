@@ -256,6 +256,7 @@ async def initialize_session(openai_ws):
 #python main.py --call=sip:admin@jokerrr.sip.twilio.com
 if __name__ == "__main__":
     import uvicorn
+    import argparse
     # to_phone_number = input("Please enter the phone number to call: ")
     # client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     # try:
