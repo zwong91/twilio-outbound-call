@@ -109,21 +109,21 @@ async def log_call_sid(call_sid):
 async def index_page():
     return {"message": "Twilio Media Stream Server is running!"}
 
-@app.post("/make-call")
-async def make_call(request: Request):
-    """Make an outgoing call to the specified phone number."""
-    data = await request.json()
-    to_phone_number = data.get("to")
-    if not to_phone_number:
-        return {"error": "Phone number is required"}
+# @app.post("/make-call")
+# async def make_call(request: Request):
+#     """Make an outgoing call to the specified phone number."""
+#     data = await request.json()
+#     to_phone_number = data.get("to")
+#     if not to_phone_number:
+#         return {"error": "Phone number is required"}
 
-    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    call = client.calls.create(
-        url=f"{NGROK_URL}/outgoing-call",
-        to=to_phone_number,
-        from_=TWILIO_PHONE_NUMBER
-    )
-    return {"call_sid": call.sid}
+#     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+#     call = client.calls.create(
+#         url=f"{NGROK_URL}/outgoing-call",
+#         to=to_phone_number,
+#         from_=TWILIO_PHONE_NUMBER
+#     )
+#     return {"call_sid": call.sid}
 
 @app.api_route("/outgoing-call", methods=["GET", "POST"])
 async def handle_outgoing_call(request: Request):
