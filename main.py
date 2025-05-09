@@ -67,6 +67,8 @@ LOG_EVENT_TYPES = [
 
 app = FastAPI()
 
+SHOW_TIMING_MATH = False
+
 if not OPENAI_API_KEY:
     raise ValueError('Missing the OpenAI API key. Please set it in the .env file.')
 
