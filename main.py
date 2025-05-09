@@ -74,57 +74,52 @@ if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN or not TWILIO_PHONE_NUMBER:
     raise ValueError('Missing Twilio configuration. Please set it in the .env file.')
 
 
-async def make_call(phone_number_to_call: str):
-    """Make an outbound call."""
-    # if not phone_number_to_call:
-    #     raise ValueError("Please provide a phone number to call.")
+# async def make_call(phone_number_to_call: str):
+#     """Make an outbound call."""
+#     if not phone_number_to_call:
+#         raise ValueError("Please provide a phone number to call.")
 
-    # is_allowed = await check_number_allowed(phone_number_to_call)
-    # if not is_allowed:
-    #     raise ValueError(f"The number {phone_number_to_call} is not recognized as a valid outgoing number or caller ID.")
+#     is_allowed = await check_number_allowed(phone_number_to_call)
+#     if not is_allowed:
+#         raise ValueError(f"The number {phone_number_to_call} is not recognized as a valid outgoing number or caller ID.")
 
-    # Ensure compliance with applicable laws and regulations
-    # All of the rules of TCPA apply even if a call is made by AI.
-    # Do your own diligence for compliance.
+#     # Ensure compliance with applicable laws and regulations
+#     # All of the rules of TCPA apply even if a call is made by AI.
+#     # Do your own diligence for compliance.
 
-    outbound_twiml = (
-        f'<?xml version="1.0" encoding="UTF-8"?>'
-        f'<Response><Connect><Stream url="wss://{NGROK_URL}/media-stream" /></Connect></Response>'
-    )
+#     outbound_twiml = (
+#         f'<?xml version="1.0" encoding="UTF-8"?>'
+#         f'<Response><Connect><Stream url="wss://{NGROK_URL}/media-stream" /></Connect></Response>'
+#     )
 
-    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    call = client.calls.create(
-        from_=TWILIO_PHONE_NUMBER,
-        to=phone_number_to_call,
-        twiml=outbound_twiml
-    )
-
-    await log_call_sid(call.sid)
-
-async def log_call_sid(call_sid):
-    """Log the call SID."""
-    print(f"Call started with SID: {call_sid}")
-    
+#     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+#     call = client.calls.create(
+#         from_=TWILIO_PHONE_NUMBER,
+#         to=phone_number_to_call,
+#         twiml=outbound_twiml
+#     )
+#     print(f"Call initiated with SID: {call.sid}") 
 
 @app.get("/", response_class=HTMLResponse)
 async def index_page():
     return {"message": "Twilio Media Stream Server is running!"}
 
-# @app.post("/make-call")
-# async def make_call(request: Request):
-#     """Make an outgoing call to the specified phone number."""
-#     data = await request.json()
-#     to_phone_number = data.get("to")
-#     if not to_phone_number:
-#         return {"error": "Phone number is required"}
+@app.post("/make-call")
+async def make_call(request: Request):
+    """Make an outgoing call to the specified phone number."""
+    data = await request.json()
+    to_phone_number = data.get("to")
+    if not to_phone_number:
+        return {"error": "Phone number is required"}
 
-#     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-#     call = client.calls.create(
-#         url=f"{NGROK_URL}/outgoing-call",
-#         to=to_phone_number,
-#         from_=TWILIO_PHONE_NUMBER
-#     )
-#     return {"call_sid": call.sid}
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    call = client.calls.create(
+        url=f"{NGROK_URL}/outgoing-call",
+        to=to_phone_number,
+        from_=TWILIO_PHONE_NUMBER
+    )
+    print(f"Call started with SID: {call.sid}")
+    return {"call_sid": call.sid}
 
 @app.api_route("/outgoing-call", methods=["GET", "POST"])
 async def handle_outgoing_call(request: Request):
@@ -258,31 +253,29 @@ async def initialize_session(openai_ws):
 if __name__ == "__main__":
     import uvicorn
     import argparse
-    # to_phone_number = input("Please enter the phone number to call: ")
-    # client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    # try:
-    #     call = client.calls.create(
-    #         url=f"{NGROK_URL}/outgoing-call",
-    #         to=to_phone_number,
-    #         from_=TWILIO_PHONE_NUMBER
-    #     )
-    #     print(f"Call initiated with SID: {call.sid}")
-    # except Exception as e:
-    #     print(f"Error initiating call: {e}")
-    # uvicorn.run(app, host="0.0.0.0", port=PORT)
 
     parser = argparse.ArgumentParser(description="Run the Twilio AI voice assistant server.")
     parser.add_argument('--call', required=True, help="The phone number to call, e.g., '--call=+18005551212'")
     args = parser.parse_args()
 
     phone_number = args.call
+    
     print(
         'Our recommendation is to always disclose the use of AI for outbound or inbound calls.\n'
         'Reminder: All of the rules of TCPA apply even if a call is made by AI.\n'
         'Check with your counsel for legal and compliance advice.'
     )
-
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(make_call(phone_number))
     
+    #to_phone_number = input("Please enter the phone number to call: ")
+    to_phone_number = phone_number
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    try:
+        call = client.calls.create(
+            url=f"{NGROK_URL}/outgoing-call",
+            to=to_phone_number,
+            from_=TWILIO_PHONE_NUMBER
+        )
+        print(f"Call initiated with SID: {call.sid}")
+    except Exception as e:
+        print(f"Error initiating call: {e}")
     uvicorn.run(app, host="0.0.0.0", port=PORT)
