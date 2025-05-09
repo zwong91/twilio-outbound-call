@@ -92,6 +92,7 @@ async def make_call(phone_number_to_call: str):
         f'<Response><Connect><Stream url="wss://{NGROK_URL}/media-stream" /></Connect></Response>'
     )
 
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     call = client.calls.create(
         from_=TWILIO_PHONE_NUMBER,
         to=phone_number_to_call,
