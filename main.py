@@ -208,7 +208,7 @@ async def handle_media_stream(websocket: WebSocket):
 
         async def send_to_twilio():
             """Receive events from the OpenAI Realtime API, send audio back to Twilio."""
-            nonlocal stream_sid, session_id
+            nonlocal stream_sid, session_id, response_start_timestamp_twilio
             try:
                 async for openai_message in openai_ws:
                     response = json.loads(openai_message)
@@ -241,6 +241,7 @@ async def handle_media_stream(websocket: WebSocket):
                         await send_mark(websocket, stream_sid)
 
                     # Trigger an interruption. Your use case might work better using `input_audio_buffer.speech_stopped`, or combining the two.
+                    # Interrupt handling/AI preemption 清除 Twilio 媒体流缓冲区并发送 OpenAI conversation.item.truncate
                     if response.get('type') == 'input_audio_buffer.speech_started':
                         print("Speech started detected.")
                         if last_assistant_item:
