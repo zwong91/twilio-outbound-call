@@ -15,6 +15,7 @@ As an advanced python full-stack developer, prioritize code maintainability, rea
 
 - **Use Flask** for backend web development.
 - **Use FastAPI** for building fast and asynchronous APIs.
+- **Use Twilio SDK** for voice call.
 - **Leverage SQLAlchemy** for database models and ORM.
 - **Use Celery** for task queues and background tasks.
 - **Utilize the latest Python features**, such as type annotations and async/await for concurrency.
