@@ -1,0 +1,126 @@
+{
+  "github.gitProtocol": "ssh",
+  "githubPullRequests.experimental.chat": true,
+  "githubPullRequests.experimental.notificationsView": true,
+  "githubPullRequests.assignCreated": "${user}",
+  "githubPullRequests.commentExpandState": "collapseAll",
+  "githubPullRequests.pullBranch": "never",
+  "githubPullRequests.pullRequestDescription": "template",
+  "githubPullRequests.pushBranch": "always",
+  "gitlens.advanced.messages": {
+    "suppressIntegrationRequestTimedOutWarning": true
+  },
+  "gitlens.defaultDateFormat": "D MMMM YYYY h:mma",
+  "gitlens.defaultDateShortFormat": "D MMM YYYY",
+  "gitlens.defaultTimeFormat": "h:mma",
+  "gitlens.plusFeatures.enabled": false,
+  "gitlens.showWelcomeOnInstall": false,
+  "gitlens.showWhatsNewAfterUpgrades": false,
+  "gitlens.views.searchAndCompare.files.layout": "tree",
+  "go.inlayHints.compositeLiteralFields": true,
+  "go.inlayHints.functionTypeParameters": true,
+  "go.inlayHints.rangeVariableTypes": true,
+  "go.toolsManagement.autoUpdate": true,
+  "go.useLanguageServer": true,
+  "gopls": {
+    "formatting.gofumpt": true
+  },
+
+  // 编辑器通用设置
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // TypeScript/JavaScript 设置
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  "files.associations": {
+    "*.appxmanifest": "xml",
+    "*.ash": "shellscript",
+    "*.compose.override.yaml": "dockercompose",
+    "*.compose.yaml": "dockercompose",
+    "*.flutter-plugins": "properties",
+    "*.flutter-plugins-dependencies": "json",
+    "*.graphqlconfig": "json",
+    "*.mcmeta": "json",
+    "*.metadata": "yaml",
+    "*.mustache": "handlebars",
+    "*.pwsh": "powershell",
+    "*.sql": "sql",
+    "*.stow-local-ignore": "ignore",
+    ".env": "env",
+    ".env.*": "env",
+    ".env.*.local": "env",
+    ".gcloudignore": "ignore",
+    ".markdownlintrc": "json",
+    "authorized_keys": "ssh_config",
+    "pubspec.lock": "yaml"
+    },
+    "files.autoSave": "onWindowChange",
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.factorypath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        ".elixir_ls": true,
+        "_build": true,
+        "deps": true,
+        "node_modules": false,
+        "vendor": true
+    },
+  "files.insertFinalNewline": true,
+  "files.restoreUndoStack": false,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+
+  // Git 设置
+  "gitmoji.showEmojiCode": true,      // 显示emoji代码
+  "gitmoji.addCustomEmoji": [],     // 允许自定义emoji
+  "gitmoji.onlyUseCustomEmoji": false,// 使用默认和自定义emoji
+
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  "git.allowForcePush": true,
+  "git.autoRepositoryDetection": "subFolders",
+  "git.autoStash": true,
+  "git.confirmForcePush": false,
+  "git.confirmSync": false,
+  "git.enableCommitSigning": false,
+  "git.ignoredRepositories": [".vscode"],
+  "git.inputValidationLength": 80,
+  "git.inputValidationSubjectLength": 80,
+  "git.pruneOnFetch": true,
+  "git.pullBeforeCheckout": true,
+  "git.repositoryScanMaxDepth": 4,
+  "git.timeline.showUncommitted": true,
+
+  // Copilot 详细配置
+  "github.copilot.chat.codeGeneration.instructions": [
+    { "file": ".prettierrc.yaml" },
+    { "file": "copilot/copilot-instructions.md" },
+    { "file": "copilot/style-guide.md" },
+    { "text": "Dont apologize. Dont apologize. Dont apologize." }
+  ],
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    { "file": "copilot/copilot-commit-message-instructions.md" },
+    { "file": "copilot/gitmojis.yaml" }
+  ],
+  "github.copilot.chat.reviewSelection.instructions": [
+    { "file": "copilot/copilot-instructions.md" },
+    { "file": "copilot/style-guide.md" }
+  ],
+  "github.copilot.chat.testGeneration.instructions": [
+    { "file": ".prettierrc.yaml" },
+    { "file": "package.json" },
+    { "file": "tsconfig.eslint.json" },
+    { "file": "tsconfig.json" }
+  ],
+  "github.copilot.enable": {
+    "*": true,
+    "markdown": true,
+    "plaintext": true,
+    "scminput": true
+  },
+  "github.copilot.chat.editor.temporalContext.enabled": true
+}
