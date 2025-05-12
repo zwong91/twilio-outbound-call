@@ -88,3 +88,58 @@ register => username:password@mycompanytrunk.pstn.twilio.com
 🔒 建議安全設定：
 * 只允許 Twilio IP 位址存取你的 SIP ServerTwilio IP 列表參考： https://www.twilio.com/docs/voice/sip-trunking/ip-addresses
 * 使用 TLS + SRTP（Twilio 支援）
+
+
+to:
+sip:admin@jokerrr.sip.twilio.com
+
+
+Linphone 连接Twilio的第三方 SIP 账号
+
+Username: admin
+Password: Twiliopwd123!@#
+Domain: jokerrr.sip.twilio.com
+
+
+curl -X POST http://localhost:5050/make-call \
+  -H "Content-Type: application/json" \
+  -d '{"to": "sip:jong-un@sip.linphone.org"}'
+
+{"call_sid":"CAbc48a38895d3b5d1f5a73f3e028e5f1f"}
+
+
+wscat -c wss://6bfe-14-155-107-253.ngrok-free.app/media-stream
+Connected (press CTRL+C to quit)
+
+
+
+# 承载线路（carrier）是你自己的中继（trunk）或 SIP 线路，Twilio 将通过它来处理呼叫。你可以使用 Twilio 的 BYOC（Bring Your Own Carrier）功能来实现这一点。
+```python
+from twilio.rest import Client
+
+# Twilio 账户 SID 和 Auth Token
+account_sid = "your_account_sid"
+auth_token = "your_auth_token"
+client = Client(account_sid, auth_token)
+
+# 发起呼叫
+call = client.calls.create(
+    to="+1234567890",  # 目标电话号码
+    from_="+0987654321",  # Twilio 号码或 BYOC 号码
+    url="http://demo.twilio.com/docs/voice.xml",  # 语音 XML 处理呼叫
+    byoc="your_byoc_trunk_sid"  # 指定 BYOC 中继 BYxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx, 仅当 to 是一个电话号码时有效
+)
+
+#发起的是一个 SIP 电话（比如 sip:alice@example.com），对方的服务器可能需要你进行认证
+# create(
+#     to="+8613800138000",
+#     from_="+865571112222",
+#     sip_auth_username="my-sip-user",
+#     sip_auth_password="my-sip-pass",
+#     method="POST",
+#     status_callback="https://your.service.com/callback"
+# )
+
+
+print(f"Call SID: {call.sid}")
+```
