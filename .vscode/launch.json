@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "Python: FastAPI",
-      "type": "python",
+      "type": "python3",
       "request": "launch",
-      "module": "src.main",
+      "module": "main.py",
       "args": [
         "--port", "8765",
         "--certfile", "cf.pem",
