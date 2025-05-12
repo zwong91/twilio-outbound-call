@@ -30,8 +30,8 @@ async def check_number_allowed(to):
     """Check if a number is allowed to be called."""
     try:
         # Uncomment these lines to test numbers. Only add numbers you have permission to call
-        # OVERRIDE_NUMBERS = ['+18005551212'] 
-        # if to in OVERRIDE_NUMBERS:             
+        # OVERRIDE_NUMBERS = ['+18005551212']
+        # if to in OVERRIDE_NUMBERS:
           # return True
         #控制的 Twilio 来电号码
         incoming_numbers = client.incoming_phone_numbers.list(phone_number=to)
@@ -47,7 +47,7 @@ async def check_number_allowed(to):
     except Exception as e:
         print(f"Error checking phone number: {e}")
         return False
-    
+
 
 # Configuration
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY') # requires OpenAI Realtime API Access
@@ -100,7 +100,7 @@ if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN or not TWILIO_PHONE_NUMBER:
 #         to=phone_number_to_call,
 #         twiml=outbound_twiml
 #     )
-#     print(f"Call initiated with SID: {call.sid}") 
+#     print(f"Call initiated with SID: {call.sid}")
 
 @app.get("/", response_class=HTMLResponse)
 async def index_page():
@@ -114,7 +114,7 @@ async def handle_incoming_call(request: Request):
     response = VoiceResponse()
     # <Say> punctuation to improve text-to-speech flow
     response = VoiceResponse()
-    response.say("稍等一下哦，转接中, 转接中……")
+    response.say("Ahoy,稍等一下哦，转接中, 转接中……")
     response.pause(length=1)
     response.say("好了，它上线啦！想说啥尽管说吧~")
     host = request.url.hostname
@@ -180,7 +180,7 @@ async def handle_media_stream(websocket: WebSocket):
 
         print("Connected to OpenAI Realtime API")
         print("Waiting for Twilio to send audio data...")
-        
+
         async def receive_from_twilio():
             """Receive audio data from Twilio and send it to the OpenAI Realtime API."""
             nonlocal stream_sid, latest_media_timestamp
@@ -249,7 +249,7 @@ async def handle_media_stream(websocket: WebSocket):
                         if last_assistant_item:
                             print(f"Interrupting response with id: {last_assistant_item}")
                             await handle_speech_started_event()
-    
+
                     if response['type'] == 'conversation.item.created':
                         print(f"conversation.item.created event: {response}")
             except Exception as e:
@@ -336,7 +336,7 @@ async def initialize_session(openai_ws):
     }
     print('Sending session update:', json.dumps(session_update))
     await openai_ws.send(json.dumps(session_update))
-    
+
     # Have the AI speak first
     await send_initial_conversation_item(openai_ws)
 
@@ -350,13 +350,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     phone_number = args.call
-    
+
     print(
         'Our recommendation is to always disclose the use of AI for outbound or inbound calls.\n'
         'Reminder: All of the rules of TCPA apply even if a call is made by AI.\n'
         'Check with your counsel for legal and compliance advice.'
     )
-    
+
     #to_phone_number = input("Please enter the phone number to call: ")
     to_phone_number = phone_number
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
