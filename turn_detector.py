@@ -14,6 +14,7 @@ import time
 HG_MODEL = "livekit/turn-detector"
 ONNX_FILENAME = "model_q8.onnx"
 MODEL_REVISION = "v1.2.0"
+
 MAX_HISTORY = 4
 MAX_HISTORY_TOKENS = 512
 
@@ -126,7 +127,7 @@ def predict_end_of_turn(chat_context, model_data):
     inputs = tokenizer(
             formatted_text,
             add_special_tokens=False,
-            return_tensors="np",
+            return_tensors="np",  # ONNX requires NumPy format
             max_length=MAX_HISTORY_TOKENS,
             truncation=True,
         )
@@ -152,7 +153,7 @@ def main():
     start_time = time.time()
 
     # Run predictions
-    for i, example in enumerate([chat_example1, chat_example2, chat_example3], 1):
+    for i, example in enumerate([chat_example1[-MAX_HISTORY:], chat_example2[-MAX_HISTORY:], chat_example3[-MAX_HISTORY:]], 1):
         probability = predict_end_of_turn(example, model_data)
         print(f'End of turn probability{i}: {probability}')
 
