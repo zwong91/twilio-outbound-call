@@ -11,6 +11,12 @@ from pathlib import Path
 import time
 
 # Constants
+HG_MODEL = "livekit/turn-detector"
+ONNX_FILENAME = "model_q8.onnx"
+MODEL_REVISION = "v1.2.0"
+MAX_HISTORY = 4
+MAX_HISTORY_TOKENS = 512
+
 UNLIKELY_THRESHOLD = 0.15
 
 chat_example1 = [
@@ -23,8 +29,8 @@ chat_example1 = [
 chat_example2 = [
     {"role": "user", "content": "你能帮我查下附近的餐厅吗？"},
     {"role": "assistant", "content": "好的，我可以帮你找到周边的美食。"},
-    {"role": "user", "content": "我想吃中餐，但是"},
-    {"role": "user", "content": "最好是能够"}
+    {"role": "user", "content": "我想吃中餐"},
+    {"role": "assistant", "content": "我推荐你去尝试一下那家新开的川菜馆。"},
 ]
 
 chat_example3 = [
