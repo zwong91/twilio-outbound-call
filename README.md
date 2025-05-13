@@ -107,3 +107,7 @@ Run the turn detector:
 ```bash
 python turn_detector.py
 ```
+
+
+## References
+[twilio-samples](https://github.com/twilio-samples/speech-assistant-openai-realtime-api-python/pull/35/files)
